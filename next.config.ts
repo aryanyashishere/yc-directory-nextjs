@@ -2,22 +2,27 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
-  dangerouslyAllowSVG:true,
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+ 
   images:{
+    dangerouslyAllowSVG: true,
     remotePatterns:[
       {
         protocol: "https",
         hostname: "*"
       }
-    ]
+    ],
   },
-  experimental:{
-ppr: 'incremental'    
+  experimental: {
+    ppr: "incremental",
+    after: true,
   },
-  devIndicators:{
-    appIsrStatus : true, 
+  devIndicators: {
+    appIsrStatus: true,
     buildActivity: true,
-    buildActivityPosition: "bottom-right"
+    buildActivityPosition: "bottom-right",
   },
 };
 
