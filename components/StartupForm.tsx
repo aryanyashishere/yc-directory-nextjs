@@ -6,17 +6,51 @@ import { Textarea } from './ui/textarea';
 import MDEditor from '@uiw/react-md-editor'
 import { Button } from './ui/button';
 import { Send } from 'lucide-react';
+import { formSchema } from '@/lib/validation';
+import {z} from "zod"
 
 const StartupForm = () => {
     const [errors, setErrors] = useState<Record<string,string>>({});
     const [pitch, setPitch] = useState();
     
     // const isPending = false;
-    const handleFormSubmit = () => {};
+    const handleFormSubmit = async (prevState: any , formData: FormData) => {
+        try{
+                const formValues = {
+                    title: formData.get("title") as string,
+                    description: formData.get("description") as string,
+                    category: formData.get("category") as string,
+                    link: formData.get("link") as string,
+                    pitch: formData.get("pitch") as string,
+                    
+                }
+
+                await formSchema.parseAsync(formValues);
+                console.log(formValues)
+
+                // const result = await createDiffieHellman(prevState, formData, pitch);
+                // console.log(result);
+
+        }catch(error){
+                    if(error instanceof z.ZodError){
+                        const fieldErrors = error.flatten().fieldErrors;
+                        setErrors(fieldErrors as unknown as Record<string, string>);
+                        return {...prevState, error: "Validation failed", status: "ERROR"}
+
+                    }
+                    return {
+                        ...prevState,
+                        error: "An unexpected eroor has occurred",
+                        status: "ERROR",
+
+                    }
+        }
+    };
 
 
     const [state, formAction, isPending] = useActionState(handleFormSubmit, 
         {
+            // added useActionState hook for submissiion of startup form but for validation we need zod in next commit
             error: "", 
             status: "INITIAL",
         }
@@ -24,7 +58,7 @@ const StartupForm = () => {
     
   return (
   
-    <form action={()=>{}} className='startup-form'>
+    <form action={formAction} className='startup-form'>
         <div>
             <label htmlFor="title" className='startup-form_label'>Title</label>
             <Input id="title" name="title" className='startup-form_input' required placeholder='Startup Title'/>
