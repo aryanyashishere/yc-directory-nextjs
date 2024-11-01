@@ -9,6 +9,9 @@ import { Send } from 'lucide-react';
 import { formSchema } from '@/lib/validation';
 import { z } from "zod"
 import { useRouter } from 'next/navigation';
+import { createPitch } from '@/lib/actions';
+import { useToast } from "@/hooks/use-toast";
+
 
 const StartupForm = () => {
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -17,7 +20,7 @@ const StartupForm = () => {
     const { toast } = useToast();
 
 
-    const { router } = useRouter();
+    const  router = useRouter();
 
 
     // const isPending = false;
@@ -28,26 +31,26 @@ const StartupForm = () => {
                 description: formData.get("description") as string,
                 category: formData.get("category") as string,
                 link: formData.get("link") as string,
-                pitch: formData.get("pitch") as string,
+                pitch
 
             }
 
             await formSchema.parseAsync(formValues);
             console.log(formValues)
 
-            // const result = await createIdea(prevState, formData, pitch);
+            const result = await createPitch(prevState, formData, pitch);
             // console.log(result);
-            // if (result.status == "SUCCESS") {
+            if (result.status == "SUCCESS") {
 
-            //     toast({
-            //         title: "Success",
-            //         description: "Your Pitch has been created Successfully",
-            //     })
+                toast({
+                    title: "Success",
+                    description: "Your Pitch has been created Successfully",
+                })
 
-            //     router.push(`/startup/${result.id}`);
+                router.push(`/startup/${result._id}`);
 
-            // }
-            // return result;
+            }
+            return result;
 
         } catch (error) {
             if (error instanceof z.ZodError) {
@@ -57,7 +60,7 @@ const StartupForm = () => {
                 toast({
                     title: "Error",
                     description: "please check you inputs and try again",
-                    variant: "desctructive",
+                    variant: "destructive",
                 })
                 return { ...prevState, error: "Validation failed", status: "ERROR" }
 
@@ -65,7 +68,7 @@ const StartupForm = () => {
             toast({
                 title: "Error",
                 description: "An unexpected error has occurred",
-                variant: "desctructive",
+                variant: "destructive",
             })
             return {
                 ...prevState,
