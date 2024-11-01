@@ -1,116 +1,145 @@
 'use client'
 
-import React, { useState , useActionState} from 'react'
+import React, { useState, useActionState } from 'react'
 import { Input } from './ui/input'
 import { Textarea } from './ui/textarea';
 import MDEditor from '@uiw/react-md-editor'
 import { Button } from './ui/button';
 import { Send } from 'lucide-react';
 import { formSchema } from '@/lib/validation';
-import {z} from "zod"
+import { z } from "zod"
+import { useRouter } from 'next/navigation';
 
 const StartupForm = () => {
-    const [errors, setErrors] = useState<Record<string,string>>({});
+    const [errors, setErrors] = useState<Record<string, string>>({});
     const [pitch, setPitch] = useState();
-    
+
+    const { toast } = useToast();
+
+
+    const { router } = useRouter();
+
+
     // const isPending = false;
-    const handleFormSubmit = async (prevState: any , formData: FormData) => {
-        try{
-                const formValues = {
-                    title: formData.get("title") as string,
-                    description: formData.get("description") as string,
-                    category: formData.get("category") as string,
-                    link: formData.get("link") as string,
-                    pitch: formData.get("pitch") as string,
-                    
-                }
+    const handleFormSubmit = async (prevState: any, formData: FormData) => {
+        try {
+            const formValues = {
+                title: formData.get("title") as string,
+                description: formData.get("description") as string,
+                category: formData.get("category") as string,
+                link: formData.get("link") as string,
+                pitch: formData.get("pitch") as string,
 
-                await formSchema.parseAsync(formValues);
-                console.log(formValues)
+            }
 
-                // const result = await createDiffieHellman(prevState, formData, pitch);
-                // console.log(result);
+            await formSchema.parseAsync(formValues);
+            console.log(formValues)
 
-        }catch(error){
-                    if(error instanceof z.ZodError){
-                        const fieldErrors = error.flatten().fieldErrors;
-                        setErrors(fieldErrors as unknown as Record<string, string>);
-                        return {...prevState, error: "Validation failed", status: "ERROR"}
+            // const result = await createIdea(prevState, formData, pitch);
+            // console.log(result);
+            // if (result.status == "SUCCESS") {
 
-                    }
-                    return {
-                        ...prevState,
-                        error: "An unexpected eroor has occurred",
-                        status: "ERROR",
+            //     toast({
+            //         title: "Success",
+            //         description: "Your Pitch has been created Successfully",
+            //     })
 
-                    }
+            //     router.push(`/startup/${result.id}`);
+
+            // }
+            // return result;
+
+        } catch (error) {
+            if (error instanceof z.ZodError) {
+                const fieldErrors = error.flatten().fieldErrors;
+                setErrors(fieldErrors as unknown as Record<string, string>);
+
+                toast({
+                    title: "Error",
+                    description: "please check you inputs and try again",
+                    variant: "desctructive",
+                })
+                return { ...prevState, error: "Validation failed", status: "ERROR" }
+
+            }
+            toast({
+                title: "Error",
+                description: "An unexpected error has occurred",
+                variant: "desctructive",
+            })
+            return {
+                ...prevState,
+                error: "An unexpected error has occurred",
+                status: "ERROR",
+
+            }
         }
     };
 
 
-    const [state, formAction, isPending] = useActionState(handleFormSubmit, 
+    const [state, formAction, isPending] = useActionState(handleFormSubmit,
         {
             // added useActionState hook for submissiion of startup form but for validation we need zod in next commit
-            error: "", 
+            error: "",
             status: "INITIAL",
         }
     );
-    
-  return (
-  
-    <form action={formAction} className='startup-form'>
-        <div>
-            <label htmlFor="title" className='startup-form_label'>Title</label>
-            <Input id="title" name="title" className='startup-form_input' required placeholder='Startup Title'/>
 
-            {errors.title && <p className="startup-form_error">{errors.title}</p>}
-        </div>
-        <div>
-            <label htmlFor="dscription" className='startup-form_label'>Description</label>
-            <Textarea id="description" name="description" className='startup-form_textarea' required placeholder='Startup Description'/>
+    return (
 
-            {errors.description && <p className="startup-form_error">{errors.description}</p>}
-        </div>
-        <div> 
-            <label htmlFor="category" className='startup-form_label'>Category</label>
-            <Input id="category" name="category" className='startup-form_input' required placeholder='Startup Category (Texh, Health, education ....'/>
+        <form action={formAction} className='startup-form'>
+            <div>
+                <label htmlFor="title" className='startup-form_label'>Title</label>
+                <Input id="title" name="title" className='startup-form_input' required placeholder='Startup Title' />
 
-            {errors.category && <p className="startup-form_error">{errors.category}</p>}
-        </div>
-        <div>
-            <label htmlFor="link" className='startup-form_label'>Image URL</label>
-            <Input id="link" name="link" className='startup-form_input' required placeholder='Startup Image URL'/>
+                {errors.title && <p className="startup-form_error">{errors.title}</p>}
+            </div>
+            <div>
+                <label htmlFor="dscription" className='startup-form_label'>Description</label>
+                <Textarea id="description" name="description" className='startup-form_textarea' required placeholder='Startup Description' />
 
-            {errors.link && <p className="startup-form_error">{errors.link}</p>}
-        </div>
-        <div data-color-mode="light">
-            <label htmlFor="pitch" className='startup-form_label'>Pitch</label>
-            
-            <MDEditor 
-            value={pitch}
-            onChange={(value)=>setPitch(value as string)}
-            id="pitch"
-            preview= "edit"
-            height={300}
-            style={{borderRadius : 20, overflow:"hidden"}}
-            textareaProps={{placeholder: "Briefly describe your idea and what problem it solves",}}
-            previewOptions={{
-                disallowedElements: ["style"]
-            }}
-            />
-            
+                {errors.description && <p className="startup-form_error">{errors.description}</p>}
+            </div>
+            <div>
+                <label htmlFor="category" className='startup-form_label'>Category</label>
+                <Input id="category" name="category" className='startup-form_input' required placeholder='Startup Category (Texh, Health, education ....' />
 
-            {errors.pitch && <p className="startup-form_error">{errors.pitch}</p>}
-        </div>
+                {errors.category && <p className="startup-form_error">{errors.category}</p>}
+            </div>
+            <div>
+                <label htmlFor="link" className='startup-form_label'>Image URL</label>
+                <Input id="link" name="link" className='startup-form_input' required placeholder='Startup Image URL' />
 
-        <Button type='submit' className='startup-form_btn' disabled={isPending}>
-            {/* Submit */}
-            {isPending? "Submitting..." : "Submit Your Pitch"}
-            <Send className='size-6 ml-2'/>
-        </Button>
-    </form>
+                {errors.link && <p className="startup-form_error">{errors.link}</p>}
+            </div>
+            <div data-color-mode="light">
+                <label htmlFor="pitch" className='startup-form_label'>Pitch</label>
+
+                <MDEditor
+                    value={pitch}
+                    onChange={(value) => setPitch(value as string)}
+                    id="pitch"
+                    preview="edit"
+                    height={300}
+                    style={{ borderRadius: 20, overflow: "hidden" }}
+                    textareaProps={{ placeholder: "Briefly describe your idea and what problem it solves", }}
+                    previewOptions={{
+                        disallowedElements: ["style"]
+                    }}
+                />
 
 
-)
+                {errors.pitch && <p className="startup-form_error">{errors.pitch}</p>}
+            </div>
+
+            <Button type='submit' className='startup-form_btn' disabled={isPending}>
+                {/* Submit */}
+                {isPending ? "Submitting..." : "Submit Your Pitch"}
+                <Send className='size-6 ml-2' />
+            </Button>
+        </form>
+
+
+    )
 }
 export default StartupForm
