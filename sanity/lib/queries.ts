@@ -18,8 +18,9 @@ export const STARTUPS_QUERY = defineQuery(`
 }`)
 
 
+
 export const STARTUP_BY_ID_QUERY = defineQuery(`
-  *[_type =="startup" && _id ==   $id][0]{
+  *[_type =="startup" && _id == $id][0]{
    _id,
     title,
     slug , 
@@ -114,4 +115,4 @@ export const PLAYLIST_BY_SLUG_QUERY =
     image,
     pitch
   }
-  )`);
+  }`);

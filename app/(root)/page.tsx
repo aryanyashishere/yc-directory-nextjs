@@ -7,6 +7,7 @@ import { sanityFetch , SanityLive} from "@/sanity/lib/live";
 import { auth } from "@/auth";
 import { Suspense } from "react";
 
+// export const experimental_ppr = true;
 
 
 export default async function Home({searchParams}: {
@@ -21,14 +22,19 @@ export default async function Home({searchParams}: {
   const session = await auth();
   console.log(session?.id);
   
-  
-  console.log(query)
-  console.log(params)
-  
+
+  // console.log(query)
+  // console.log(params)
+ 
   // const posts = await client.fetch(STARTUPS_QUERY);
-  const {data: posts} = await sanityFetch({query: STARTUPS_QUERY, params});
+  // const {data: posts} = await client.fetch({query: STARTUPS_QUERY, params});
+  // const {data: posts} = await sanityFetch({query: STARTUPS_QUERY, params});
+  const {data: posts} = await sanityFetch({query: STARTUPS_QUERY, params,  
+  });
   
-  console.log(posts)
+
+
+  // console.log(posts)
   // console.log(JSON.stringify(posts));
 
 //   const posts = [{

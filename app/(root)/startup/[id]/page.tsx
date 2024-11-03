@@ -28,7 +28,7 @@ const page = async ({ params }: { params: Promise<{ id: string }> }) => {
   const [post, { select: editorPosts }] = await Promise.all([
     client.fetch(STARTUP_BY_ID_QUERY, { id }),
     client.fetch(PLAYLIST_BY_SLUG_QUERY, {
-      slug: "editor-picks-new",
+      slug: "editor-picks",
     }),
   ]);
   
@@ -40,7 +40,10 @@ const page = async ({ params }: { params: Promise<{ id: string }> }) => {
   // const {selet: editorPosts} await client.fetch(PLAYLIST_BY_SLUG_QUERY, {
   //   slug: "editor-picks-new",
   // } );
-
+  const imageStyle = {
+    width:"100%",
+    height:"auto",
+  }
 
 
   if (!post) return notFound();
@@ -57,19 +60,28 @@ const page = async ({ params }: { params: Promise<{ id: string }> }) => {
 
       <section className='section_container'>
 
-        <img src="{post.image}" alt="thumbnail" className='w-full h-auto rounded-xl' />
+        {/* <img src="{post.image}" alt="thumbnail" className='w-full h-auto rounded-xl' /> */}
+      
 
+        <div className="space-y-5 mt-10 max-w-5xl mx-auto">
+        <Image
+            src={post.image}
+            alt="thumbnail"
+            width={1000}
+            height={500}
+            // style={imageStyle}
+            className=' rounded-xl'
+          />
 
-        <div className="space-y-5 mt-10 max-w-4xl mx-auto">
           <div className="flex-between gap-5">
-            <Link href={`/user/${post.autho?._id}`} className='flex gap-2 items-center mb-3'>
+            <Link href={`/user/${post.author?._id}`} className='flex gap-2 items-center mb-3'>
 
               <Image
                 src={post.author.image}
                 alt="avatar"
                 width={64}
                 height={64}
-                className='rounded-full drop-shado-lg'
+                className='rounded-full drop-shadow-lg'
               />
 
               <div>
