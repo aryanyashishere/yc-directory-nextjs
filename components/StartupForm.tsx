@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import React, { useState, useActionState } from 'react'
 import { Input } from './ui/input'
@@ -31,15 +31,15 @@ const StartupForm = () => {
                 description: formData.get("description") as string,
                 category: formData.get("category") as string,
                 link: formData.get("link") as string,
-                pitch
+                pitch,
 
             }
 
             await formSchema.parseAsync(formValues);
-            console.log(formValues)
+            console.log(formValues);
 
             const result = await createPitch(prevState, formData, pitch);
-            // console.log(result);
+            console.log(result);
             if (result.status == "SUCCESS") {
 
                 toast({
@@ -75,7 +75,7 @@ const StartupForm = () => {
                 error: "An unexpected error has occurred",
                 status: "ERROR",
 
-            }
+            };
         }
     };
 
@@ -135,7 +135,7 @@ const StartupForm = () => {
                 {errors.pitch && <p className="startup-form_error">{errors.pitch}</p>}
             </div>
 
-            <Button type='submit' className='startup-form_btn' disabled={isPending}>
+            <Button type='submit' className='startup-form_btn text-white' disabled={isPending}>
                 {/* Submit */}
                 {isPending ? "Submitting..." : "Submit Your Pitch"}
                 <Send className='size-6 ml-2' />
@@ -143,6 +143,6 @@ const StartupForm = () => {
         </form>
 
 
-    )
-}
+    );
+};
 export default StartupForm

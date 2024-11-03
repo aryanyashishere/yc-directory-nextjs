@@ -5,6 +5,8 @@ import { STARTUPS_QUERY } from "@/sanity/lib/queries";
 import { StartupTypeCard } from "@/components/StartupCard";
 import { sanityFetch , SanityLive} from "@/sanity/lib/live";
 import { auth } from "@/auth";
+import { Suspense } from "react";
+
 
 
 export default async function Home({searchParams}: {
@@ -15,14 +17,18 @@ export default async function Home({searchParams}: {
 
   const query = (await searchParams).query;
   const params = {search : query || null };
-
+  
   const session = await auth();
   console.log(session?.id);
-
+  
+  
+  console.log(query)
+  console.log(params)
   
   // const posts = await client.fetch(STARTUPS_QUERY);
   const {data: posts} = await sanityFetch({query: STARTUPS_QUERY, params});
   
+  console.log(posts)
   // console.log(JSON.stringify(posts));
 
 //   const posts = [{
@@ -57,17 +63,21 @@ export default async function Home({searchParams}: {
 
     <section className="section_container">
       <p className="text-30-semibold">
-        {query ?  `Search Results for "${query}"` : 'All Startups'}
+        {
+        query ?  `Search Results for "${query}" +"${posts?.length}"` : `All Startups ${posts.length}`}
       </p>
 
       <ul className="mt-7 card_grid">
+        <Suspense fallback={<p>Loading...</p>}>
         {posts?.length>0 ? (
           posts.map((post: StartupTypeCard)=>(
-            <StartupCard key={post?._id} post= {post} />
+            <StartupCard key={post?._id} post={post} />
+         
         ))
       ): (
         <p className="no-results" >No Startups Found</p>
       )}
+      </Suspense>
       </ul>
 
     </section>
